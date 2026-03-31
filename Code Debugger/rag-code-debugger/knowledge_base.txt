@@ -1,0 +1,41 @@
+# C++ Common Pitfalls
+RULE: Always check for off-by-one errors in loops. Array indices start at 0, so a loop iterating over n elements should use `i < n`, not `i <= n`.
+RULE: Uninitialized variables in C++ contain garbage values. Always initialize variables before use.
+RULE: Memory leaks occur when `new` is used without a corresponding `delete`. Prefer smart pointers (unique_ptr, shared_ptr) in modern C++.
+RULE: Integer overflow can occur when arithmetic exceeds the type's range. Use `long long` for large values or check bounds explicitly.
+RULE: Dangling pointers arise when a pointer references freed memory. Set pointers to nullptr after deletion.
+RULE: Stack overflow is commonly caused by infinite recursion. Always define a base case in recursive functions.
+RULE: Segmentation faults often result from null pointer dereference, out-of-bounds array access, or accessing freed memory.
+RULE: In C++, `==` compares values while `=` is assignment. Using `=` inside an `if` condition is a common bug.
+RULE: String comparison in C-style strings requires `strcmp()`, not `==`. Use `std::string` for safer comparisons.
+RULE: Division by zero causes undefined behavior. Always validate the divisor before performing division.
+RULE: Floating point comparisons with `==` are unreliable due to precision errors. Use an epsilon-based comparison instead.
+RULE: Missing `break` in switch-case causes fall-through to the next case unintentionally.
+RULE: Vector iterators are invalidated after insertions or deletions. Re-acquire iterators after modifying a vector.
+RULE: Always check the return value of file I/O operations to handle errors gracefully.
+
+# Python Debugging Rules
+RULE: Python uses zero-based indexing. An IndexError typically means you are accessing an index out of the valid range.
+RULE: Mutable default arguments (like lists or dicts) in function definitions are shared across all calls. Use `None` as default and initialize inside the function.
+RULE: `is` checks object identity, not equality. Use `==` to compare values; use `is` only for None checks.
+RULE: Integer division in Python 3 uses `//`. The `/` operator always returns a float.
+RULE: Forgetting to return a value from a function results in `None` being returned implicitly.
+RULE: Modifying a list while iterating over it can cause unexpected behavior. Iterate over a copy instead.
+RULE: A NameError means a variable is used before it is defined or is out of scope.
+RULE: Indentation errors (IndentationError) are caused by mixing tabs and spaces or incorrect block indentation.
+RULE: Catching broad exceptions with `except Exception` can hide bugs. Catch specific exception types.
+RULE: Infinite loops occur when the loop condition never becomes False. Ensure the loop variable is updated correctly.
+RULE: Recursive functions without a base case will hit Python's recursion limit and raise RecursionError.
+RULE: Dictionary KeyError occurs when accessing a key that does not exist. Use `.get()` for safe access.
+RULE: Type errors often arise from passing the wrong type to a function. Use type hints and validate inputs.
+RULE: Global variables modified inside a function require the `global` keyword, otherwise a local variable is created.
+RULE: String formatting with `%` or `.format()` can cause errors if argument counts mismatch. Prefer f-strings.
+
+# General Algorithm Complexity Rules
+RULE: A single loop over n elements is O(n). Nested loops over n elements are O(n^2).
+RULE: Binary search runs in O(log n) time. It requires the input to be sorted.
+RULE: Recursive algorithms with branching factor b and depth d have time complexity O(b^d) unless memoized.
+RULE: Hash table lookups (dict, set in Python; unordered_map in C++) are O(1) average case.
+RULE: Sorting algorithms like merge sort and quicksort run in O(n log n) average time.
+RULE: Dynamic programming reduces exponential recursive solutions to polynomial time by caching subproblem results.
+RULE: Space complexity should be considered alongside time complexity. Recursive calls consume O(depth) stack space.
