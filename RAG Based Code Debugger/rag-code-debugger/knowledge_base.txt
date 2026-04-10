@@ -1,0 +1,106 @@
+# C++ Common Pitfalls
+RULE: Always check for off-by-one errors in loops. Array indices start at 0, so a loop iterating over n elements should use `i < n`, not `i <= n`.
+RULE: Uninitialized variables in C++ contain garbage values. Always initialize variables before use.
+RULE: Memory leaks occur when `new` is used without a corresponding `delete`. Prefer smart pointers (unique_ptr, shared_ptr) in modern C++.
+RULE: Integer overflow can occur when arithmetic exceeds the type's range. Use `long long` for large values or check bounds explicitly.
+RULE: Dangling pointers arise when a pointer references freed memory. Set pointers to nullptr after deletion.
+RULE: Stack overflow is commonly caused by infinite recursion. Always define a base case in recursive functions.
+RULE: Segmentation faults often result from null pointer dereference, out-of-bounds array access, or accessing freed memory.
+RULE: In C++, `==` compares values while `=` is assignment. Using `=` inside an `if` condition is a common bug.
+RULE: String comparison in C-style strings requires `strcmp()`, not `==`. Use `std::string` for safer comparisons.
+RULE: Division by zero causes undefined behavior. Always validate the divisor before performing division.
+RULE: Floating point comparisons with `==` are unreliable due to precision errors. Use an epsilon-based comparison instead.
+RULE: Missing `break` in switch-case causes fall-through to the next case unintentionally.
+RULE: Vector iterators are invalidated after insertions or deletions. Re-acquire iterators after modifying a vector.
+RULE: Always check the return value of file I/O operations to handle errors gracefully.
+
+# Python Debugging Rules
+RULE: Python uses zero-based indexing. An IndexError typically means you are accessing an index out of the valid range.
+RULE: Mutable default arguments (like lists or dicts) in function definitions are shared across all calls. Use `None` as default and initialize inside the function.
+RULE: `is` checks object identity, not equality. Use `==` to compare values; use `is` only for None checks.
+RULE: Integer division in Python 3 uses `//`. The `/` operator always returns a float.
+RULE: Forgetting to return a value from a function results in `None` being returned implicitly.
+RULE: Modifying a list while iterating over it can cause unexpected behavior. Iterate over a copy instead.
+RULE: A NameError means a variable is used before it is defined or is out of scope.
+RULE: Indentation errors (IndentationError) are caused by mixing tabs and spaces or incorrect block indentation.
+RULE: Catching broad exceptions with `except Exception` can hide bugs. Catch specific exception types.
+RULE: Infinite loops occur when the loop condition never becomes False. Ensure the loop variable is updated correctly.
+RULE: Recursive functions without a base case will hit Python's recursion limit and raise RecursionError.
+RULE: Dictionary KeyError occurs when accessing a key that does not exist. Use `.get()` for safe access.
+RULE: Type errors often arise from passing the wrong type to a function. Use type hints and validate inputs.
+RULE: Global variables modified inside a function require the `global` keyword, otherwise a local variable is created.
+RULE: String formatting with `%` or `.format()` can cause errors if argument counts mismatch. Prefer f-strings.
+
+# General Algorithm Complexity Rules
+RULE: A single loop over n elements is O(n). Nested loops over n elements are O(n^2).
+RULE: Binary search runs in O(log n) time. It requires the input to be sorted.
+RULE: Recursive algorithms with branching factor b and depth d have time complexity O(b^d) unless memoized.
+RULE: Hash table lookups (dict, set in Python; unordered_map in C++) are O(1) average case.
+RULE: Sorting algorithms like merge sort and quicksort run in O(n log n) average time.
+RULE: Dynamic programming reduces exponential recursive solutions to polynomial time by caching subproblem results.
+RULE: Space complexity should be considered alongside time complexity. Recursive calls consume O(depth) stack space.
+
+# JavaScript Common Pitfalls
+RULE: Using == instead of === performs type coercion and can cause unexpected comparisons. Always use === for strict equality.
+RULE: var is function-scoped and hoisted, which causes bugs in loops and closures. Use let or const instead.
+RULE: Asynchronous code with callbacks or promises can lead to unhandled rejections. Always use try/catch with async/await or .catch() on promises.
+RULE: Mutating objects or arrays passed as function arguments changes the original. Use spread syntax or structuredClone() to avoid side effects.
+RULE: typeof null returns 'object', not 'null'. Always check for null explicitly with === null.
+RULE: Floating point arithmetic like 0.1 + 0.2 does not equal 0.3 in JavaScript. Use toFixed() or integer arithmetic for precision.
+RULE: Forgetting to use return in an arrow function body with curly braces returns undefined implicitly.
+RULE: Event listeners added inside loops capture the same variable reference. Use let or closures to capture the correct value per iteration.
+RULE: Accessing a property on undefined or null throws a TypeError. Use optional chaining (?.) for safe access.
+RULE: Array.sort() sorts elements as strings by default. Always provide a comparator function for numeric sorting.
+
+# Java Common Pitfalls
+RULE: NullPointerException is caused by calling methods or accessing fields on a null reference. Always null-check before use or use Optional.
+RULE: Using == to compare String objects checks reference equality, not value. Always use .equals() for string comparison.
+RULE: Integer overflow silently wraps around in Java. Use long or BigInteger for large arithmetic.
+RULE: Catching Exception or Throwable broadly can hide bugs. Catch specific exception types.
+RULE: Not closing resources like streams or connections causes memory leaks. Use try-with-resources to ensure proper cleanup.
+RULE: ArrayList is not thread-safe. Use Collections.synchronizedList() or CopyOnWriteArrayList in concurrent contexts.
+RULE: Autoboxing null into a primitive type (e.g., int x = nullInteger) throws a NullPointerException.
+RULE: Infinite loops occur when the loop condition is never updated. Ensure loop variables are modified correctly.
+RULE: Array index out of bounds occurs when accessing an index >= array.length. Always validate indices before access.
+RULE: Static fields are shared across all instances. Modifying a static field from an instance method affects all objects.
+
+# C Common Pitfalls
+RULE: Buffer overflow occurs when writing beyond the bounds of an array. Always validate buffer sizes before writing.
+RULE: Using strcpy without bounds checking is unsafe. Use strncpy or strlcpy instead.
+RULE: Forgetting to null-terminate a string causes undefined behavior in string functions. Always ensure the last character is '\0'.
+RULE: malloc returns NULL on allocation failure. Always check the return value before using the pointer.
+RULE: Freeing memory twice (double free) causes undefined behavior. Set pointers to NULL after freeing.
+RULE: Returning a pointer to a local variable is undefined behavior since the stack frame is destroyed after the function returns.
+RULE: Signed integer overflow is undefined behavior in C. Use unsigned types or check bounds explicitly.
+RULE: Comparing a char to EOF may fail if char is unsigned. Declare the variable as int when reading with getchar().
+RULE: Missing break in switch-case causes unintentional fall-through to subsequent cases.
+RULE: Pointer arithmetic on a non-array pointer is undefined behavior. Only perform arithmetic on pointers to array elements.
+
+# TypeScript Common Pitfalls
+RULE: Using the any type disables type checking entirely. Prefer unknown and narrow the type explicitly.
+RULE: Non-null assertion (!) suppresses null checks and can cause runtime errors if the value is actually null or undefined.
+RULE: Type assertions with as do not perform runtime checks. Validate data at runtime when working with external sources like APIs.
+RULE: Optional properties accessed without checking for undefined will cause runtime errors. Use optional chaining (?.) or nullish coalescing (??) for safe access.
+RULE: Enums in TypeScript compile to objects, and reverse mapping only works for numeric enums. Use string enums to avoid confusion.
+RULE: Forgetting to await an async function returns a Promise object instead of the resolved value.
+RULE: Interface and type alias merging behaves differently. Interfaces support declaration merging; type aliases do not.
+RULE: Strict mode (strict: true) in tsconfig catches many common bugs. Always enable it in new projects.
+
+# Go Common Pitfalls
+RULE: Ignoring error return values silently swallows failures. Always check and handle errors explicitly in Go.
+RULE: Goroutine leaks occur when goroutines block forever on channels with no sender or receiver. Always ensure goroutines can exit.
+RULE: Closing a channel twice causes a panic. Only the sender should close a channel, and only once.
+RULE: Slice operations share the underlying array. Modifying a sub-slice affects the original. Use copy() to get an independent slice.
+RULE: Loop variable capture in goroutines captures the variable by reference, not value. Pass the variable as a function argument to capture its value.
+RULE: nil maps can be read from but not written to. Always initialize a map with make() before inserting keys.
+RULE: Struct methods with value receivers do not modify the original struct. Use pointer receivers to mutate struct fields.
+RULE: defer runs when the surrounding function returns, not at the end of a block. Be careful using defer inside loops.
+
+# Rust Common Pitfalls
+RULE: Ownership errors occur when a value is used after it has been moved. Clone the value or use references to avoid this.
+RULE: Borrowing a value as mutable while it is also borrowed as immutable violates Rust's borrow rules and causes a compile error.
+RULE: unwrap() on a None or Err value causes a panic. Use match, if let, or the ? operator for safe error handling.
+RULE: Integer overflow in debug mode causes a panic; in release mode it wraps silently. Use checked_add, saturating_add, or wrapping_add explicitly.
+RULE: Lifetime errors occur when a reference outlives the data it points to. Annotate lifetimes explicitly when the compiler cannot infer them.
+RULE: Using clone() excessively to satisfy the borrow checker is a code smell. Restructure ownership or use Rc/Arc for shared ownership.
+RULE: Mutable global state requires unsafe or synchronization primitives like Mutex. Avoid mutable statics where possible.

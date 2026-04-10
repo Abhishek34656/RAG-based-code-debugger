@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAG Code Debugger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+  <div class="ide">
+
+    <!-- ── Titlebar ── -->
+    <div class="titlebar">
+      <div class="titlebar-dots">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-yellow"></span>
+        <span class="dot dot-green"></span>
+      </div>
+      <div class="titlebar-center">
+        <span class="titlebar-icon">⚙</span>
+        <span class="titlebar-name">RAG Code Debugger</span>
+        <span class="titlebar-sep">/</span>
+        <span class="titlebar-file" id="titlebar-file">main.py</span>
+      </div>
+      <div id="time-saved-counter" class="time-saved hidden" aria-live="polite" aria-label="Time saved counter">
+        <span class="time-saved-icon">⏱</span>
+        <span class="time-saved-label">Saved</span>
+        <span id="time-saved-value" class="time-saved-value">0m</span>
+      </div>
+    </div>
+
+    <!-- ── Tab bar ── -->
+    <div class="tabbar">
+      <div class="tab tab-active">
+        <span class="tab-dot"></span>
+        <span class="tab-label">editor.py</span>
+      </div>
+      <div class="tab">
+        <span class="tab-label">output.md</span>
+      </div>
+      <div class="tabbar-right">
+        <!-- Mode toggle -->
+        <div class="mode-toggle-bar" role="group" aria-label="Editor mode">
+          <button class="mode-btn mode-btn-active" id="btn-single-mode" data-mode="single">Single</button>
+          <button class="mode-btn" id="btn-comparison-mode" data-mode="comparison">⇄ Compare</button>
+        </div>
+        <span class="tagline">Ctrl+Enter to run</span>
+      </div>
+    </div>
+
+    <!-- ── Main workspace ── -->
+    <main class="workspace">
+
+      <!-- ══ LEFT: editor panel ══ -->
+      <section class="panel editor-panel" aria-label="Code editor">
+
+        <!-- ── Single Mode toolbar ── -->
+        <div class="panel-toolbar" id="single-toolbar">
+          <div class="toolbar-left">
+            <label for="language-select" class="toolbar-label">Lang:</label>
+            <select id="language-select" class="language-select" aria-label="Select programming language">
+              <option value="Python">Python</option>
+              <option value="C++">C++</option>
+              <option value="JavaScript">JavaScript</option>
+              <option value="Java">Java</option>
+              <option value="C">C</option>
+              <option value="TypeScript">TypeScript</option>
+              <option value="Go">Go</option>
+              <option value="Rust">Rust</option>
+            </select>
+          </div>
+          <div class="toolbar-right">
+            <button id="clear-btn" class="btn-ghost" aria-label="Clear editor">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              Clear
+            </button>
+            <button id="debug-btn" class="btn-run" aria-label="Debug code">
+              <svg width="11" height="13" viewBox="0 0 11 13" fill="currentColor" aria-hidden="true">
+                <path d="M0 0l11 6.5L0 13V0z"/>
+              </svg>
+              Run
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Single Mode editor ── -->
+        <div id="single-editor" class="editor-wrap">
+          <div class="line-numbers" id="line-numbers" aria-hidden="true">1</div>
+          <textarea
+            id="code-input"
+            class="code-textarea"
+            placeholder="# Paste your buggy code here...&#10;# Ctrl+Enter to debug"
+            spellcheck="false"
+            aria-label="Code input"
+            autocomplete="off" autocorrect="off" autocapitalize="off"
+          ></textarea>
+        </div>
+
+        <!-- ── Comparison Mode toolbar ── -->
+        <div class="panel-toolbar hidden" id="comparison-toolbar">
+          <div class="toolbar-left">
+            <span class="toolbar-label">Compare Mode</span>
+          </div>
+          <div class="toolbar-right">
+            <button id="compare-btn" class="btn-run" aria-label="Compare code">
+              <svg width="11" height="13" viewBox="0 0 11 13" fill="currentColor" aria-hidden="true">
+                <path d="M0 0l11 6.5L0 13V0z"/>
+              </svg>
+              Compare
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Comparison Mode editors (flex row) ── -->
+        <div id="comparison-editors" class="comparison-editors hidden">
+
+          <!-- Code A -->
+          <div class="comp-editor-wrap" id="editor-a-wrap">
+            <div class="comp-editor-header">
+              <span class="comp-editor-label label-a">Code A</span>
+              <select id="language-select-a" class="language-select" aria-label="Language for Code A">
+                <option value="Python">Python</option>
+                <option value="C++">C++</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Java">Java</option>
+                <option value="C">C</option>
+                <option value="TypeScript">TypeScript</option>
+                <option value="Go">Go</option>
+                <option value="Rust">Rust</option>
+              </select>
+            </div>
+            <div class="editor-wrap">
+              <div class="line-numbers" id="line-numbers-a" aria-hidden="true">1</div>
+              <textarea
+                id="code-input-a"
+                class="code-textarea"
+                placeholder="# Paste Code A here..."
+                spellcheck="false"
+                aria-label="Code A input"
+                autocomplete="off" autocorrect="off" autocapitalize="off"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- VS badge -->
+          <div class="vs-badge" aria-hidden="true">VS</div>
+
+          <!-- Code B -->
+          <div class="comp-editor-wrap" id="editor-b-wrap">
+            <div class="comp-editor-header">
+              <span class="comp-editor-label label-b">Code B</span>
+              <select id="language-select-b" class="language-select" aria-label="Language for Code B">
+                <option value="Python">Python</option>
+                <option value="C++">C++</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Java">Java</option>
+                <option value="C">C</option>
+                <option value="TypeScript">TypeScript</option>
+                <option value="Go">Go</option>
+                <option value="Rust">Rust</option>
+              </select>
+            </div>
+            <div class="editor-wrap">
+              <div class="line-numbers" id="line-numbers-b" aria-hidden="true">1</div>
+              <textarea
+                id="code-input-b"
+                class="code-textarea"
+                placeholder="# Paste Code B here..."
+                spellcheck="false"
+                aria-label="Code B input"
+                autocomplete="off" autocorrect="off" autocapitalize="off"
+              ></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── Status bar ── -->
+        <div class="statusbar">
+          <span class="status-item" id="status-lang">Python</span>
+          <span class="status-sep">·</span>
+          <span class="status-item" id="status-lines">1 line</span>
+          <span class="status-sep">·</span>
+          <span class="status-item">UTF-8</span>
+          <span class="status-spacer"></span>
+          <span class="status-item status-hint">Ctrl+Enter to run</span>
+        </div>
+      </section>
+
+      <!-- Resize handle -->
+      <div class="resize-handle" aria-hidden="true"></div>
+
+      <!-- ══ RIGHT: output panel ══ -->
+      <section class="panel output-panel" aria-label="Debug output">
+        <div class="panel-toolbar">
+          <div class="toolbar-left">
+            <span class="toolbar-label" id="output-panel-title">Analysis &amp; Fix</span>
+            <span id="rules-badge" class="rules-badge hidden" aria-live="polite"></span>
+          </div>
+          <div class="toolbar-right">
+            <!-- Output tabs -->
+            <div class="output-tabbar" id="output-tabbar" role="tablist">
+              <button class="output-tab output-tab-active" data-tab="analysis" role="tab" aria-selected="true">Debug Analysis</button>
+              <button class="output-tab" data-tab="heatmap" role="tab" aria-selected="false">Complexity Heatmap</button>
+            </div>
+            <button id="copy-btn" class="btn-ghost hidden" aria-label="Copy output">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <path d="M3 11H2a1 1 0 01-1-1V2a1 1 0 011-1h8a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              </svg>
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- Analysis tab pane -->
+        <div id="tab-analysis" class="output-tab-pane output-content" role="tabpanel" aria-live="polite">
+          <div class="placeholder">
+            <div class="placeholder-graphic">
+              <div class="pg-line"></div>
+              <div class="pg-line pg-line--short"></div>
+              <div class="pg-line"></div>
+              <div class="pg-line pg-line--med"></div>
+            </div>
+            <p class="placeholder-title">No output yet</p>
+            <p class="placeholder-sub">Paste code on the left and hit <kbd>Run</kbd></p>
+          </div>
+        </div>
+
+        <!-- Heatmap tab pane -->
+        <div id="tab-heatmap" class="output-tab-pane hidden" role="tabpanel">
+          <!-- Single mode heatmap -->
+          <div id="heatmap-single" class="heatmap-pane hidden">
+            <div class="heatmap-legend" id="heatmap-legend-single"></div>
+            <div class="heatmap-wrap" id="heatmap-code-single"></div>
+          </div>
+          <!-- Comparison mode split heatmap -->
+          <div id="heatmap-split" class="split-heatmap-view hidden">
+            <div class="split-heatmap-panel" id="heatmap-panel-a">
+              <div class="split-heatmap-label label-a">Code A</div>
+              <div class="heatmap-legend" id="heatmap-legend-a"></div>
+              <div class="heatmap-wrap" id="heatmap-code-a"></div>
+            </div>
+            <div class="split-heatmap-divider"></div>
+            <div class="split-heatmap-panel" id="heatmap-panel-b">
+              <div class="split-heatmap-label label-b">Code B</div>
+              <div class="heatmap-legend" id="heatmap-legend-b"></div>
+              <div class="heatmap-wrap" id="heatmap-code-b"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="statusbar">
+          <span class="status-item" id="status-model">llama-3.3-70b</span>
+          <span class="status-sep">·</span>
+          <span class="status-item">RAG enabled</span>
+          <span class="status-spacer"></span>
+          <span class="status-item" id="status-ready">Ready</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
